@@ -68,26 +68,22 @@ double genann_act_linear(const genann *ann, double a);
 
 
 local function init(inputs, hidden_layers, hidden, outputs)
-    print("init", inputs, hidden_layers, hidden, outputs)
-    --local obj = ffi.C.genann_init(inputs, hidden_layers, hidden, outputs)
-    print("clib", clib)
     local obj = clib.genann_init(inputs, hidden_layers, hidden, outputs)
-    print("obj total_neurons", obj.total_neurons)
-    print("obj total_weights", obj.total_weights)
-    print("obj outputs", obj.outputs)
+    --print("obj total_neurons", obj.total_neurons)
+    --print("obj total_weights", obj.total_weights)
+    --print("obj outputs", obj.outputs)
     return obj
 end
 
 local function genann_randomize(ann)
+    clib.genann_randomize(ann)
 end
 
 local function genann_copy(ann)
+    return clib.genann_copy(ann)
 end
 
 local function genann_free(ann)
-end
-
-local function genann_free()
 end
 
 local function genann_run(ann, inputs)
@@ -104,8 +100,6 @@ local function genann_run(ann, inputs)
 end
 
 local function genann_train(ann, inputs, desired_outputs, learning_rate)
-    --print("inputs", inspect(inputs), inspect(desired_outputs), inspect(learning_rate))
-    --local newinputs = ffi.cast("double*", inputs)
     local newinputs = ffi.new("double[?]", #inputs)
     for i = 0, #inputs - 1 do
         newinputs[i] = inputs[i + 1]
@@ -132,6 +126,17 @@ end
 local function genann_act_linear(ann, a)
 end
 
+local function genann_print(ann)
+    local str = ""
+    str = "inputs " .. ann.inputs .. "\n"
+    str = str .. "hidden_layers " .. ann.hidden_layers .. "\n"
+    str = str .. "hidden " .. ann.hidden .. "\n"
+    str = str .. "outputs " .. ann.outputs .. "\n"
+    str = str .. "total_weights " .. ann.total_weights .. "\n"
+    str = str .. "total_neurons " .. ann.total_neurons
+    return str
+end
+
 return {
     init = init,
     randomize = genann_randomize,
@@ -145,4 +150,5 @@ return {
     act_sigmoid_cached = genann_act_sigmoid_cached,
     act_threshold = genann_act_threshold,
     act_linear = genann_act_linear,
+    print = genann_print,
 }
