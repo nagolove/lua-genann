@@ -137,8 +137,20 @@ local function genann_print(ann)
     return str
 end
 
+local function write(ann, file)
+    file:write(string.format("%d %d %d %d", ann.inputs, ann.hidden_layers,
+        ann.hidden, ann.outputs))
+    for i = 0, i < ann.total_weights do
+        file:write(string.format(" %.20e", ann.weights[i]))
+    end
+end
+
+local function read(file)
+end
+
 return {
     init = init,
+    write = write,
     randomize = genann_randomize,
     copy = genann_copy,
     free = genann_free,
