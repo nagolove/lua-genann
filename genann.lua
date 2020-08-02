@@ -101,7 +101,6 @@ local function genann_run(ann, inputs)
         table.insert(res, output[i])
     end
     return res
-    --return ffi.cast("double*", clib.genann_run(ann, newinputs))
 end
 
 local function genann_train(ann, inputs, desired_outputs, learning_rate)
