@@ -87,13 +87,16 @@ local function genann_free(ann)
 end
 
 local function genann_run(ann, inputs)
+    assert(ann)
+    assert(#inputs == ann.inputs)
     local newinputs = ffi.new("double[?]", #inputs)
     for i = 0, #inputs - 1 do
         newinputs[i] = inputs[i + 1]
     end
-    local res = {}
     local output = clib.genann_run(ann, newinputs)
+    local res = {}
     for i = 0, ann.outputs - 1 do
+        print(i, output[i])
         table.insert(res, output[i])
     end
     return res
