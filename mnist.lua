@@ -67,6 +67,7 @@ local function init()
     local index = 17
     local imgSize = rows * columns
     imageSize = rows
+    print("imageSize", imageSize, rows)
     local num = 1
 
     print("magic", magic)
@@ -95,13 +96,13 @@ local function init()
 
         --saveImage(data, columns, rows, num)
         setupOutput(labels[num])
-        print("output", inspect(output))
+        --print("output", inspect(output))
         genann.train(ntwk, array, output, 0.01)
 
         num = num + 1
         index = index + imgSize - 0
 
-        if num > 10 then
+        if num > 800 then
             break
         end
 
@@ -110,11 +111,58 @@ local function init()
     print("#trainImagesData", #trainImagesData)
 end
 
+local function vector2png(vec)
+    local imgdata = love.image.newImageData(28, 28)
+    local index = 1
+    imgdata:mapPixel(function(x, y, r, g, b, a)
+        local r = vec[index]
+        index = index + 1
+        return r, 0, 0, 1
+    end)
+    imgdata:encode("png", "vector.png")
+end
+
+local function getMax(vec)
+    local max = 0
+    local index = -1
+    for i, v in pairs(vec) do
+        if v > max then
+            max = v
+            index = i
+        end
+    end
+    return index + 1
+end
+
 local function recognize(imageData)
+    local vec = {}
+    imageData:mapPixel(function(x, y, r, g, b, a)
+        print("x, y, color sum", x, y, r + g + b)
+        if r + g + b > 0.1 then
+            table.insert(vec, 1)
+        else
+            table.insert(vec, 0)
+        end
+        return 1, 1, 1, 1
+    end)
+
+    local out = genann.run(ntwk, vec)
+    print("#out", #out)
+    print("out", inspect(out))
+
+    --print("vec", inspect(vec))
+    vector2png(vec)
+
+    local value = getMax(out)
+    print("value", value)
+end
+
+local function getImageSize()
+    return imageSize
 end
 
 return {
     init = init,
     recognize = recognize,
-    imageSize = imageSize,
+    getImageSize = getImageSize,
 }

@@ -96,7 +96,7 @@ local function genann_run(ann, inputs)
     local output = clib.genann_run(ann, newinputs)
     local res = {}
     for i = 0, ann.outputs - 1 do
-        print(i, output[i])
+        --print(i, output[i])
         table.insert(res, output[i])
     end
     return res
